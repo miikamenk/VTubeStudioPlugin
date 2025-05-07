@@ -5,6 +5,13 @@ from src.backend.PluginManager.ActionHolder import ActionHolder
 # Import VTS backend
 from .VTubeStudio.backend.VTSController import VTSController
 
+import sys
+import os
+from loguru import logger as log
+
+# Add plugin to sys.paths
+sys.path.append(os.path.dirname(__file__))
+
 # Import actions
 from .actions.TriggerHotkey.TriggerHotkey import TriggerHotkey
 from .actions.Pan.Pan import Pan
@@ -15,7 +22,13 @@ class VTubeStudio(PluginBase):
     def __init__(self):
         super().__init__()
 
-        self.vts = VTSController()
+        print("Launch backend")
+        self.launch_backend(
+            os.path.join(self.PATH, "VTubeStudio", "backend.py"),
+            os.path.join(self.PATH, "VTubeStudio", ".venv"),
+            open_in_terminal=True
+        )
+
         self.lm = self.locale_manager
 
         ## Register actions
