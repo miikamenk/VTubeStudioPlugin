@@ -8,7 +8,7 @@ plugin_info = {
 }
 
 class VTSController():
-    async def __init__(self):
+    def __init__(self):
         self.vts = pyvts.vts(plugin_info=plugin_info):
 
     async def connect_auth():

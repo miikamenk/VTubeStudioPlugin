@@ -13,7 +13,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw
 
-class SimpleAction(ActionBase):
+class Rotate(ActionBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
