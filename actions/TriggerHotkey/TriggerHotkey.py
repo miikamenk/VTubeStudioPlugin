@@ -30,7 +30,7 @@ class TriggerHotkey(ActionBase):
     def on_key_down(self) -> None:
         settings = self.get_settings()
         hotkey = settings.get("hotkey")
-        asyncio.create_task(self.vts.triggerHotkey(hotkey))
+        self.plugin_base.backend.triggerHotkey(hotkey)
     
     def get_config_rows(self) -> list:
         self.hotkey_model = Gtk.ListStore.new([str]) # Hotkey 
@@ -44,16 +44,17 @@ class TriggerHotkey(ActionBase):
 
         self.hotkey_row.combo_box.connect("changed", self.on_hotkey_change)
 
+        self.load_config_settings()
+
         return [self.hotkey_row]
  
-    async def load_hotkey_model(self):
+    def load_hotkey_model(self):
         self.hotkey_model.clear()
         
-        with await vts.getHotkeys() as hotkeys:
+        with self.plugin_base.backend.getHotkeys() as hotkeys:
             for hotkey in hotkeys:
                 self.hotkey_model.append([hotkey])
 
-        self.load_config_settings()
  
     def load_config_settings(self):
         settings = self.get_settings()

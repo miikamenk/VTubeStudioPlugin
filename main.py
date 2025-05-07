@@ -51,7 +51,7 @@ class VTubeStudio(PluginBase):
             action_id = "dev_miikamenk_Template::Pan",
             action_name = "Pan",
             action_support={
-                Input.Key: ActionInputSupport.UNTESTED,
+                Input.Key: ActionInputSupport.SUPPORTED,
                 Input.Dial: ActionInputSupport.SUPPORTED,
                 Input.Touchscreen: ActionInputSupport.UNTESTED
             }
@@ -64,7 +64,7 @@ class VTubeStudio(PluginBase):
             action_id = "dev_miikamenk_Template::Zoom",
             action_name = "Zoom",
             action_support={
-                Input.Key: ActionInputSupport.UNTESTED,
+                Input.Key: ActionInputSupport.SUPPORTED,
                 Input.Dial: ActionInputSupport.SUPPORTED,
                 Input.Touchscreen: ActionInputSupport.UNTESTED
             }
@@ -77,7 +77,7 @@ class VTubeStudio(PluginBase):
             action_id = "dev_miikamenk_Template::Rotate",
             action_name = "Rotate",
             action_support={
-                Input.Key: ActionInputSupport.UNTESTED,
+                Input.Key: ActionInputSupport.SUPPORTED,
                 Input.Dial: ActionInputSupport.SUPPORTED,
                 Input.Touchscreen: ActionInputSupport.UNTESTED
             }
