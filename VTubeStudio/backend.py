@@ -9,42 +9,42 @@ plugin_info = {
 
 class VTSController():
     def __init__(self):
-        self.vts = pyvts.vts(plugin_info=plugin_info):
+        self.vts = pyvts.vts(plugin_info=plugin_info)
 
-    async def connect_auth():
-        await vts.connect()
-        await vts.request_authenticate_token()
-        await vts.request_authenticate()
-        await vts.close()
+    async def connect_auth(self):
+        await self.vts.connect()
+        await self.vts.request_authenticate_token()
+        await self.vts.request_authenticate()
+        await self.vts.close()
 
-    async def getHotkeys()->str[]:
-        await vts.connect()
-        await vts.request_authenticate()
-        response_data = await myvts.request(myvts.vts_request.requestHotKeyList())
+    async def getHotkeys(self)->list[str]:
+        await self.vts.connect()
+        await self.vts.request_authenticate()
+        response_data = await self.vts.request(self.vts.vts_request.requestHotKeyList())
         hotkey_list = []
         for hotkey in response_data['data']['availableHotkeys']:
             hotkey_list.append(hotkey['name'])
-        await vts.close()
+        await self.vts.close()
         return hotkey_list 
 
-    async def triggerHotkey(hotkey: str)->bool:
-        await vts.connect()
-        await vts.request_authenticate()
+    async def triggerHotkey(self, hotkey: str)->bool:
+        await self.vts.connect()
+        await self.vts.request_authenticate()
 
-        request = await vts.request(vts.vts_request.requestTriggerHotkey(hotkey))
+        request = await self.vts.request(self.vts.vts_request.requestTriggerHotkey(hotkey))
 
-        await vts.close()
+        await self.vts.close()
         print(request)
         return True
 
-    async def moveModel(x: float, y: float, rot: float, size: float, relative: bool, move_time: float)->bool:
-        await vts.connect()
-        await vts.request_authenticate()
-        request_data = await vts.vts_request.requestMoveModel(x, y, rot, size, relative, move_time)
+    async def moveModel(self, x: float, y: float, rot: float, size: float, relative: bool, move_time: float)->bool:
+        await self.vts.connect()
+        await self.vts.request_authenticate()
+        request_data = self.vts.vts_request.requestMoveModel(x, y, rot, size, relative, move_time)
 
-        request = await vts.request(request_data)
+        request = await self.vts.request(request_data)
 
-        await vts.close()
+        await self.vts.close()
         print(request)
         return True
 

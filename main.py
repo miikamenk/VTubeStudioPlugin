@@ -14,14 +14,16 @@ from .actions.Rotate.Rotate import Rotate
 class VTubeStudio(PluginBase):
     def __init__(self):
         super().__init__()
+
         self.vts = VTSController()
+        self.lm = self.locale_manager
 
         ## Register actions
         self.trigger_hotkey_holder = ActionHolder(
             plugin_base = self,
             action_base = TriggerHotkey,
             action_id = "dev_miikamenk_Template::TriggerHotkey", # Change this to your own plugin id
-            action_name = "Trigger Hotkey", 
+            action_name = self.lm.get("actions.trigger_hotkey.name"),
             action_support={
                 Input.Key: ActionInputSupport.SUPPORTED,
                 Input.Dial: ActionInputSupport.UNTESTED,
