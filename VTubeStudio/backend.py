@@ -1,6 +1,5 @@
 from vts import VTSController
 from streamcontroller_plugin_tools import BackendBase
-import asyncio
 import rpyc
 
 class Backend(BackendBase):
@@ -24,5 +23,4 @@ class Backend(BackendBase):
         return self.conn.root.move_model(x, y, rot, size, relative, move_time)
 
 backend = Backend()
-
 

@@ -55,22 +55,3 @@ class VTSController():
         print(request)
         return True
 
-## class SyncVTSController():
-##     def __init__(self):
-##         self.vtsc = VTSController()
-## 
-##     def get_connected(self):
-##         return asyncio.run(self.vtsc.get_connected())
-## 
-##     def connect_auth(self):
-##         return asyncio.run(self.vtsc.connect_auth())
-## 
-##     def getHotkeys(self)->list[str]:
-##         return asyncio.run(self.vtsc.getHotkeys())
-## 
-##     def triggerHotkey(self, hotkey: str)->bool:
-##         return asyncio.run(self.vtsc.triggerHotkey(hotkey))
-## 
-##     def moveModel(self, x: float, y: float, rot: float, size: float, relative: bool, move_time: float)->bool:
-##         return asyncio.run(self.vtsc.moveModel(x, y, rot, size, relative, move_time))
-## 
