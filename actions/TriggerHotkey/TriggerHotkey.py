@@ -7,7 +7,7 @@ from src.backend.DeckManagement.InputIdentifier import Input, InputEvent, InputI
 
 # Import python modules
 import os
-import asyncio
+from loguru import logger as log
 
 # Import gtk modules - used for the config rows
 import gi
@@ -27,7 +27,15 @@ class TriggerHotkey(ActionBase):
     def on_ready(self) -> None:
         icon_path = os.path.join(self.plugin_base.PATH, "assets", "info.png")
         self.set_media(media_path=icon_path, size=0.75)
-        
+
+        try:
+            connected = self.plugin_base.get_connected()
+            if not connected:
+                log.info("Not connected. Make sure VTubeStudio api is running")
+        except Exception as e:
+            log.error(f"Error during connection/authentication process: {e}")
+
+
     def on_key_down(self) -> None:
         settings = self.get_settings()
         hotkey = settings.get("hotkey")
@@ -40,35 +48,34 @@ class TriggerHotkey(ActionBase):
 
         self.load_hotkey_model()
 
-        self.hotkey_row.combo_box.connect("changed", self.on_hotkey_change)
+        self.hotkey_row.connect("notify::selected-item", self.on_hotkey_change)
 
         self.load_config_settings()
 
         return [self.hotkey_row]
  
     def load_hotkey_model(self):
+        hotkeys = self.plugin_base.backend.getHotkeys()
         for i in range(self.hotkey_model.get_n_items()):
             self.hotkey_model.remove(0)
-
-        
-        with self.plugin_base.backend.getHotkeys() as hotkeys:
-            for hotkey in hotkeys:
-                self.hotkey_model.append(hotkey)
+        for hotkey in hotkeys:
+            self.hotkey_model.append(hotkey)
 
  
     def load_config_settings(self):
         settings = self.get_settings()
+        if settings == None:
+            return
         hotkey = settings.get("hotkey")
-        for i, device in enumerate(self.device_model):
-            if device[0] == hotkey:
-                self.device_row.combo_box.set_active(i)
+        for i, device in enumerate(self.hotkey_model):
+            if device == hotkey:
+                self.hotkey_row.combo_box.set_active(i)
                 break
  
-    def on_hotkey_change(self, combo_box, *args):
-        hotkey = self.device_model[combo_box.get_active()][0]
+    def on_hotkey_change(self, combo, *args):
+        hotkey = combo.get_selected_item().get_string()
 
         settings = self.get_settings()
         settings["hotkey"] = hotkey 
 
         self.set_settings(settings)
-

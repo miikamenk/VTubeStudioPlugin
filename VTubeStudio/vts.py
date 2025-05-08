@@ -11,6 +11,13 @@ class VTSController():
     def __init__(self):
         self.vts = pyvts.vts(plugin_info=plugin_info)
 
+    def get_connected(self):
+        auth_status = self.vts.get_authentic_status()
+        if auth_status == 2:
+            return True
+        else:
+            return False
+
     async def connect_auth(self):
         await self.vts.connect()
         await self.vts.request_authenticate_token()
@@ -31,7 +38,7 @@ class VTSController():
         await self.vts.connect()
         await self.vts.request_authenticate()
 
-        request = await self.vts.request(self.vts.vts_request.requestTriggerHotkey(hotkey))
+        request = await self.vts.request(self.vts.vts_request.requestTriggerHotKey(hotkey))
 
         await self.vts.close()
         print(request)
@@ -48,3 +55,22 @@ class VTSController():
         print(request)
         return True
 
+## class SyncVTSController():
+##     def __init__(self):
+##         self.vtsc = VTSController()
+## 
+##     def get_connected(self):
+##         return asyncio.run(self.vtsc.get_connected())
+## 
+##     def connect_auth(self):
+##         return asyncio.run(self.vtsc.connect_auth())
+## 
+##     def getHotkeys(self)->list[str]:
+##         return asyncio.run(self.vtsc.getHotkeys())
+## 
+##     def triggerHotkey(self, hotkey: str)->bool:
+##         return asyncio.run(self.vtsc.triggerHotkey(hotkey))
+## 
+##     def moveModel(self, x: float, y: float, rot: float, size: float, relative: bool, move_time: float)->bool:
+##         return asyncio.run(self.vtsc.moveModel(x, y, rot, size, relative, move_time))
+## 

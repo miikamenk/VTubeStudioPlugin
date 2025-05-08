@@ -18,9 +18,22 @@ from .actions.Pan.Pan import Pan
 from .actions.Zoom.Zoom import Zoom
 from .actions.Rotate.Rotate import Rotate
 
+import threading
+from rpyc.utils.server import ThreadedServer
+from .VTubeStudio.VtsController import VTSControlService 
+
+
+def start_rpc_server():
+    server = ThreadedServer(VTSControlService, port=18812)
+    print("RPC server thread started on port 18812")
+    server.start()
+
 class VTubeStudio(PluginBase):
     def __init__(self):
         super().__init__()
+
+        rpc_thread = threading.Thread(target=start_rpc_server, daemon=True)
+        rpc_thread.start()
 
         print("Launch backend")
         self.launch_backend(
@@ -28,8 +41,6 @@ class VTubeStudio(PluginBase):
             os.path.join(self.PATH, "VTubeStudio", ".venv"),
             open_in_terminal=True
         )
-
-        
   
         self.lm = self.locale_manager
 
@@ -96,7 +107,9 @@ class VTubeStudio(PluginBase):
 
     def get_connected(self):
         try:
-            return self.backend.connect_auth()
+            self.backend.connect_auth()
+            return self.backend.get_connected()
         except Exception as e:
             log.error(e)
             return False
+

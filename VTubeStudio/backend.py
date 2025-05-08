@@ -1,25 +1,28 @@
-import asyncio
-import concurrent.futures.thread    # ← the pre‐load
 from vts import VTSController
 from streamcontroller_plugin_tools import BackendBase
+import asyncio
+import rpyc
 
 class Backend(BackendBase):
     def __init__(self):
         super().__init__()
-        # ① new loop, ② set it as current
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
+        self.conn = rpyc.connect("localhost", 18812)
 
-        self.vtsc = VTSController()
+    def get_connected(self):
+        return self.conn.root.get_connected()
 
     def connect_auth(self):
-        return self.loop.run_until_complete(self.vtsc.connect_auth())
+        return self.conn.root.connect_auth()
 
-    def getHotkeys(self) -> list[str]:
-        return self.loop.run_until_complete(self.vtsc.getHotkeys())
+    def getHotkeys(self)->list[str]:
+        return self.conn.root.get_hotkeys()
 
-    def triggerHotkey(self, hotkey: str) -> bool:
-        return self.loop.run_until_complete(self.vtsc.triggerHotkey(hotkey))
+    def triggerHotkey(self, hotkey: str)->bool:
+        return self.conn.root.trigger_hotkey(hotkey)
 
-    def moveModel(self, *args, **kwargs) -> bool:
-        return self.loop.run_until_complete(self.vtsc.moveModel(*args, **kwargs))
+    def moveModel(self, x: float, y: float, rot: float, size: float, relative: bool, move_time: float)->bool:
+        return self.conn.root.move_model(x, y, rot, size, relative, move_time)
+
+backend = Backend()
+
+
