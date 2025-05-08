@@ -3,6 +3,7 @@ from src.backend.PluginManager.ActionBase import ActionBase
 from src.backend.DeckManagement.DeckController import DeckController
 from src.backend.PageManagement.Page import Page
 from src.backend.PluginManager.PluginBase import PluginBase
+from src.backend.DeckManagement.InputIdentifier import Input, InputEvent, InputIdentifier
 
 # Import python modules
 import os
@@ -12,7 +13,7 @@ import asyncio
 import gi
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Gtk, Adw
+from gi.repository import GObject, Gtk, Adw
 
 class TriggerHotkey(ActionBase):
     def __init__(self, *args, **kwargs):
@@ -33,12 +34,9 @@ class TriggerHotkey(ActionBase):
         self.plugin_base.backend.triggerHotkey(hotkey)
     
     def get_config_rows(self) -> list:
-        self.hotkey_model = Gtk.ListStore.new([str]) # Hotkey 
-        self.hotkey_row = ComboRow(title=self.plugin_base.lm.get("actions.trigger_hotkey.hotkey"), model=self.hotkey_model)
-
-        self.hotkey_cell_renderer = Gtk.CellRendererText()
-        self.hotkey_row.combo_box.pack_start(self.hotkey_cell_renderer, True)
-        self.hotkey_row.combo_box.add_attribute(self.hotkey_cell_renderer, "text", 0)
+        self.hotkey_model = Gtk.StringList() # Hotkey 
+        self.hotkey_row = Adw.ComboRow(title=self.plugin_base.lm.get("actions.trigger_hotkey.hotkey"), model=self.hotkey_model)
+        self.hotkey_row.set_enable_search(True)
 
         self.load_hotkey_model()
 
@@ -49,11 +47,13 @@ class TriggerHotkey(ActionBase):
         return [self.hotkey_row]
  
     def load_hotkey_model(self):
-        self.hotkey_model.clear()
+        for i in range(self.hotkey_model.get_n_items()):
+            self.hotkey_model.remove(0)
+
         
         with self.plugin_base.backend.getHotkeys() as hotkeys:
             for hotkey in hotkeys:
-                self.hotkey_model.append([hotkey])
+                self.hotkey_model.append(hotkey)
 
  
     def load_config_settings(self):

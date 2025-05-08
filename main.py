@@ -1,9 +1,8 @@
 # Import StreamController modules
 from src.backend.PluginManager.PluginBase import PluginBase
 from src.backend.PluginManager.ActionHolder import ActionHolder
-
-# Import VTS backend
-from .VTubeStudio.backend.VTSController import VTSController
+from src.backend.DeckManagement.InputIdentifier import Input
+from src.backend.PluginManager.ActionInputSupport import ActionInputSupport
 
 import sys
 import os
@@ -23,17 +22,15 @@ class VTubeStudio(PluginBase):
     def __init__(self):
         super().__init__()
 
-        time.sleep(10)
-
         print("Launch backend")
         self.launch_backend(
             os.path.join(self.PATH, "VTubeStudio", "backend.py"),
             os.path.join(self.PATH, "VTubeStudio", ".venv"),
-            open_in_terminal=False
+            open_in_terminal=True
         )
 
-        self.backend.connect_auth()
-
+        
+  
         self.lm = self.locale_manager
 
         ## Register actions
@@ -96,3 +93,10 @@ class VTubeStudio(PluginBase):
             plugin_version = "0.0.1",
             app_version = "1.1.1-alpha"
         )
+
+    def get_connected(self):
+        try:
+            return self.backend.connect_auth()
+        except Exception as e:
+            log.error(e)
+            return False
