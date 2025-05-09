@@ -15,16 +15,13 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import GObject, Gtk, Adw
 
-class TriggerHotkey(ActionBase):
+class TriggerHotkeyKey(ActionBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.has_configuration = True
 
     def on_tick(self):
-        print("here")
-        
-    def on_ready(self) -> None:
         icon_path = os.path.join(self.plugin_base.PATH, "assets", "info.png")
         self.set_media(media_path=icon_path, size=0.75)
 
@@ -34,7 +31,9 @@ class TriggerHotkey(ActionBase):
                 log.info("Not connected. Make sure VTubeStudio api is running")
         except Exception as e:
             log.error(f"Error during connection/authentication process: {e}")
-
+        
+    def on_ready(self) -> None:
+        self.on_tick()
 
     def on_key_down(self) -> None:
         settings = self.get_settings()

@@ -1,5 +1,7 @@
 {
-    "plugin.name": "VTubeStudio",
-    "actions.trigger_hotkey.name": "Trigger hotkey",
-    "actions.trigger_hotkey.hotkey": "Hotkey"
+  "plugin.name": "VTubeStudio",
+  "actions.trigger_hotkey.name": "Trigger hotkey",
+  "actions.trigger_hotkey.hotkey": "Hotkey",
+  "actions.zoom.name": "Zoom",
+  "actions.zoom.relative": "Relative"
 }

@@ -44,7 +44,7 @@ class VTSController():
         print(request)
         return True
 
-    async def moveModel(self, x: float, y: float, rot: float, size: float, relative: bool, move_time: float)->bool:
+    async def moveModel(self, x: float, y: float, rot: int, size: int, relative: bool, move_time: float)->bool:
         await self.vts.connect()
         await self.vts.request_authenticate()
         request_data = self.vts.vts_request.requestMoveModel(x, y, rot, size, relative, move_time)
@@ -54,4 +54,33 @@ class VTSController():
         await self.vts.close()
         print(request)
         return True
+
+    async def getModelPosition(self):
+        await self.vts.connect()
+        await self.vts.request_authenticate()
+
+        # Send a CurrentModelRequest to get model info
+        response = await self.vts.request({
+            "messageType": "CurrentModelRequest"
+        })
+
+        if response["data"].get("modelLoaded"):
+            position = response["data"].get("modelPosition", [0.0, 0.0, 0.0, 0.0])
+            result = {
+                "x": position[0],
+                "y": position[1],
+                "rotation": position[2],
+                "size": position[3]
+            }        
+        else:
+            result = {
+                "x": 0.0,
+                "y": 0.0,
+                "rotation": 0.0,
+                "size": 1.0
+            }
+            print("No model is currently loaded.")
+
+        await self.vts.close()
+        return result
 

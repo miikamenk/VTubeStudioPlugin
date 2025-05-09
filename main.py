@@ -12,8 +12,8 @@ from loguru import logger as log
 sys.path.append(os.path.dirname(__file__))
 
 # Import actions
-from .actions.TriggerHotkeyKey.TriggerHotkey import TriggerHotkeyKey
-from .actions.TriggerHotkeyDial.TriggerHotkey import TriggerHotkeyDial
+from .actions.TriggerHotkey.TriggerHotkeyKey import TriggerHotkeyKey
+from .actions.TriggerHotkey.TriggerHotkeyDial import TriggerHotkeyDial
 from .actions.Pan.Pan import Pan
 from .actions.Zoom.Zoom import Zoom
 from .actions.Rotate.Rotate import Rotate
@@ -88,7 +88,7 @@ class VTubeStudio(PluginBase):
             plugin_base = self,
             action_base = Zoom,
             action_id = "dev_miikamenk_Template::Zoom",
-            action_name = "Zoom",
+            action_name = self.lm.get("actions.zoom.name"),
             action_support={
                 Input.Key: ActionInputSupport.SUPPORTED,
                 Input.Dial: ActionInputSupport.SUPPORTED,

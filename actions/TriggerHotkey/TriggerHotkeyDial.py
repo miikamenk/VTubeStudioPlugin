@@ -15,7 +15,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import GObject, Gtk, Adw
 
-class TriggerHotkey(ActionBase):
+class TriggerHotkeyDial(ActionBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
