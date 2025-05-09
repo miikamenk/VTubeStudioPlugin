@@ -7,13 +7,13 @@ from src.backend.PluginManager.ActionInputSupport import ActionInputSupport
 import sys
 import os
 from loguru import logger as log
-import time
 
 # Add plugin to sys.paths
 sys.path.append(os.path.dirname(__file__))
 
 # Import actions
-from .actions.TriggerHotkey.TriggerHotkey import TriggerHotkey
+from .actions.TriggerHotkeyKey.TriggerHotkey import TriggerHotkeyKey
+from .actions.TriggerHotkeyDial.TriggerHotkey import TriggerHotkeyDial
 from .actions.Pan.Pan import Pan
 from .actions.Zoom.Zoom import Zoom
 from .actions.Rotate.Rotate import Rotate
@@ -47,12 +47,25 @@ class VTubeStudio(PluginBase):
         ## Register actions
         self.trigger_hotkey_holder = ActionHolder(
             plugin_base = self,
-            action_base = TriggerHotkey,
+            action_base = TriggerHotkeyKey,
             action_id = "dev_miikamenk_Template::TriggerHotkey", # Change this to your own plugin id
             action_name = self.lm.get("actions.trigger_hotkey.name"),
             action_support={
                 Input.Key: ActionInputSupport.SUPPORTED,
-                Input.Dial: ActionInputSupport.UNTESTED,
+                Input.Dial: ActionInputSupport.UNSUPPORTED,
+                Input.Touchscreen: ActionInputSupport.UNTESTED
+            }
+        )
+        self.add_action_holder(self.trigger_hotkey_holder)
+
+        self.trigger_hotkey_holder = ActionHolder(
+            plugin_base = self,
+            action_base = TriggerHotkeyDial,
+            action_id = "dev_miikamenk_Template::TriggerHotkey", # Change this to your own plugin id
+            action_name = self.lm.get("actions.trigger_hotkey.name"),
+            action_support={
+                Input.Key: ActionInputSupport.UNSUPPORTED,
+                Input.Dial: ActionInputSupport.SUPPORTED,
                 Input.Touchscreen: ActionInputSupport.UNTESTED
             }
         )
