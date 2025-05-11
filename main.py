@@ -33,7 +33,7 @@ class VTubeStudio(PluginBase):
         # The backend doesn't always launch within the 0.3 seconds afforded by
         # PluginBase. Give ourselves a bit more time.
         for i in range(20):
-            if self.backend.conn is None:
+            if self.backend is None:
                 time.sleep(0.2) 
             else:
                 break
