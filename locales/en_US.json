@@ -3,5 +3,8 @@
   "actions.trigger_hotkey.name": "Trigger hotkey",
   "actions.trigger_hotkey.hotkey": "Hotkey",
   "actions.zoom.name": "Zoom",
-  "actions.zoom.relative": "Relative"
+  "actions.zoom.relative": "Relative",
+  "actions.zoom.amount": "Amount",
+  "actions.zoom.size": "Key press size",
+  "actions.zoom.held_size": "Key hold size"
 }

@@ -34,12 +34,25 @@ class VTSControlService(rpyc.Service):
         return self._run_async(self.vtsc.moveModel, x, y, rotation, size, relative, move_time)
 
     def exposed_get_model_postion(self):
-        return self._run_async(self.vtsc.getModelPosition)
+        result = self._run_async(self.vtsc.getModelPosition)
+        return dict(
+            x=float(result["x"]),
+            y=float(result["y"]),
+            rot=float(result["rot"]),
+            size=float(result["size"])
+        )
 
     def _run_async(self, func, *args):
         """Helper to run async functions in a sync context."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
+        try:
+            # Check if there's an existing event loop in the current context
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            # If no event loop is found (in case this is being called outside of an async context),
+            # create a new event loop
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
         return loop.run_until_complete(func(*args))  # Run async function synchronously
 
 # Start the rpyc service

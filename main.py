@@ -90,7 +90,7 @@ class VTubeStudio(PluginBase):
             action_id = "dev_miikamenk_Template::Zoom",
             action_name = self.lm.get("actions.zoom.name"),
             action_support={
-                Input.Key: ActionInputSupport.SUPPORTED,
+                Input.Key: ActionInputSupport.UNSUPPORTED,
                 Input.Dial: ActionInputSupport.SUPPORTED,
                 Input.Touchscreen: ActionInputSupport.UNTESTED
             }

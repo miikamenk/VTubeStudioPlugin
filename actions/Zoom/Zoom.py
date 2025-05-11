@@ -33,87 +33,110 @@ class Zoom(ActionBase):
                 log.info("Not connected. Make sure VTubeStudio api is running")
         except Exception as e:
             log.error(f"Error during connection/authentication process: {e}")
+
+
+    def event_callback(self, event: InputEvent, data: dict = None):
+        if event == Input.Key.Events.SHORT_UP:
+            self.on_key_down()
+        elif event == Input.Key.Events.HOLD_START or event == Input.Dial.Events.HOLD_START:
+            self.on_key_hold_start()
+        elif event == Input.Dial.Events.TURN_CW:
+            self.on_dial_turn(+1)
+        elif event == Input.Dial.Events.TURN_CCW:
+            self.on_dial_turn(-1)
+        elif event == Input.Dial.Events.SHORT_UP:
+            self.on_key_down()
         
     def on_ready(self) -> None:
         self.on_tick()
 
+
     def on_key_down(self) -> None:
         settings = self.get_settings()
-        current_pos = self.plugin_base.backend.getModelPosition()
-        amount = settings.get("amount")
-        relative = settings.get("relative")
-        move_time = 1.0
-        self.plugin_base.backend.moveModel(current_pos["x"], current_pos["y"], current_pos["rot"], amount, relative, move_time)
+        pos = self.plugin_base.backend.getModelPosition()
+        x = pos["x"]
+        y = pos["y"]
+        rot = pos["rot"]
+        zoom = settings.get("size", 0)
+
+        self.plugin_base.backend.moveModel(x, y, rot, zoom, False, 1)
+
+    def on_key_hold_start(self) -> None:
+        settings = self.get_settings()
+        pos = self.plugin_base.backend.getModelPosition()
+        x = pos["x"]
+        y = pos["y"]
+        rot = pos["rot"]
+        zoom = settings.get("held_size", 0)
+
+        self.plugin_base.backend.moveModel(x, y, rot, zoom, False, 1)
 
     def on_dial_turn(self, direction: int):
         try:
             settings = self.get_settings()
             amount = settings.get("amount", 0)
-            relative = settings.get("relative", False)
             move_time = 1.0
 
             delta = -amount if direction < 0 else amount
 
-            if relative:
-                # Relative move: just apply delta to zoom
-                x, y, rot = 0, 0, 0
-                zoom = delta
-            else:
-                # Absolute move: keep current pos, apply zoom offset
-                pos = self.plugin_base.backend.getModelPosition()
-                x = pos.get("x", 0)
-                y = pos.get("y", 0)
-                rot = pos.get("rot", 0)
-                zoom = pos.get("zoom", 1) + delta
+            # Relative move: just apply delta to zoom
+            x, y, rot = 0, 0, 0
+            zoom = delta
 
-            self.plugin_base.backend.moveModel(x, y, rot, zoom, relative, move_time)
+            self.plugin_base.backend.moveModel(x, y, rot, zoom, True, move_time)
 
         except Exception as e:
             log.error(e)
             self.show_error(1)
     
     def get_config_rows(self) -> list:
-        self.relative_switch = Adw.SwitchRow(title=self.plugin_base.lm.get("actions.zoom.relative"))        
-        self.amount_scale = ScaleRow(title=self.plugin_base.lm.get("actions.zoom.relative"), value=1, min=1, max=10, step=1)
-
-        self.load_zoom_model()
+        self.amount_scale = ScaleRow(title=self.plugin_base.lm.get("actions.zoom.amount"), value=1, min=1, max=10, step=1)
+        self.size_scale = ScaleRow(title=self.plugin_base.lm.get("actions.zoom.size"), value=0, min=-100, max=100, step=5)
+        self.held_size_scale = ScaleRow(title=self.plugin_base.lm.get("actions.zoom.held_size"), value=0, min=-100, max=100, step=5)
 
         self.amount_scale.scale.connect("value-changed", self.on_amount_change)
-        self.relative_switch.connect("notify::active", self.on_relative_switch_change)
+        self.size_scale.scale.connect("value-changed", self.on_size_change)
+        self.held_size_scale.scale.connect("value-changed", self.on_held_size_change)
 
         self.load_config_settings()
 
-        return [self.zoom_row]
- 
-    def load_zoom_model(self):
-        zooms = self.plugin_base.backend.getHotkeys()
-        for i in range(self.zoom_model.get_n_items()):
-            self.zoom_model.remove(0)
-        for zoom in hotkeys:
-            self.zoom_model.append(hotkey)
-
+        return [self.amount_scale, self.size_scale, self.held_size_scale]
  
     def load_config_settings(self):
         settings = self.get_settings()
         if settings == None:
             return
-        zoom = settings.get("hotkey")
-        for i, device in enumerate(self.zoom_model):
-            if device == zoom:
-                self.zoom_row.combo_box.set_active(i)
-                break
+        self.amount_scale.scale.set_value(settings.get("amount", 1))
+        self.size_scale.scale.set_value(settings.get("size", 0))
+        self.held_size_scale.scale.set_value(settings.get("held_size", 0))
  
-    def on_amount_change(self, combo, *args):
+    def on_amount_change(self, scale, *args):
         settings = self.get_settings()
 
-        amount = self.amount_scale.scale.get_value()
+        amount = scale.get_value()
 
         ## self.display_info()
 
         settings["amount"] = amount
         self.set_settings(settings)
 
-    def on_relative_switch_change(self, switch, *args):
+    def on_size_change(self, scale, *args):
         settings = self.get_settings()
-        settings["relative"] = switch.get_active()
+
+        amount = scale.get_value()
+
+        ## self.display_info()
+
+        settings["size"] = amount
         self.set_settings(settings)
+
+    def on_held_size_change(self, scale, *args):
+        settings = self.get_settings()
+
+        amount = scale.get_value()
+
+        ## self.display_info()
+
+        settings["held_size"] = amount
+        self.set_settings(settings)
+

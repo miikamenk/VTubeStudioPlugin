@@ -7,6 +7,8 @@ plugin_info = {
     "authentication_token_path": "./pyvts_token.txt"
 }
 
+from loguru import logger as log
+
 class VTSController():
     def __init__(self):
         self.vts = pyvts.vts(plugin_info=plugin_info)
@@ -44,7 +46,7 @@ class VTSController():
         print(request)
         return True
 
-    async def moveModel(self, x: float, y: float, rot: int, size: int, relative: bool, move_time: float)->bool:
+    async def moveModel(self, x: float, y: float, rot: int, size: float, relative: bool, move_time: float)->bool:
         await self.vts.connect()
         await self.vts.request_authenticate()
         request_data = self.vts.vts_request.requestMoveModel(x, y, rot, size, relative, move_time)
@@ -55,31 +57,40 @@ class VTSController():
         print(request)
         return True
 
-    async def getModelPosition(self):
+    async def getModelPosition(self)->dict[str, float]:
         await self.vts.connect()
         await self.vts.request_authenticate()
 
         # Send a CurrentModelRequest to get model info
+        # {'apiName': 'VTubeStudioPublicAPI', 'apiVersion': '1.0', 'requestID': 'SomeID', 'messageType': 'HotkeysInCurrentModelRequest', 'data': None}
         response = await self.vts.request({
-            "messageType": "CurrentModelRequest"
+            "apiName": "VTubeStudioPublicAPI",
+            "apiVersion": "1.0",
+            "requestID": "getPos",
+            "messageType": "CurrentModelRequest",
+            "data": None
         })
 
         if response["data"].get("modelLoaded"):
-            position = response["data"].get("modelPosition", [0.0, 0.0, 0.0, 0.0])
+            log.info(f"{response['data']}")
+            position = response["data"].get("modelPosition", {'positionX':0.0, 'positionY':0.0, 'rotation':0.0, 'size':0.0})
             result = {
-                "x": position[0],
-                "y": position[1],
-                "rotation": position[2],
-                "size": position[3]
+                "x": position.get("positionX", 0.0),
+                "y": position.get("positionY", 0.0),
+                "rot": position.get("rotation", 360.0),
+                "size": position.get("size", 1.0)
             }        
         else:
             result = {
                 "x": 0.0,
                 "y": 0.0,
-                "rotation": 0.0,
+                "rot": 360.0,
                 "size": 1.0
             }
             print("No model is currently loaded.")
+
+        log.info(f"Model position: {result}")
+
 
         await self.vts.close()
         return result

@@ -23,7 +23,7 @@ class Backend(BackendBase):
         return self.conn.root.move_model(x, y, rot, size, relative, move_time)
 
     def getModelPosition(self):
-        return self.conn.root.get_model_postion(self)
+        return self.conn.root.get_model_postion()
 
 backend = Backend()
 
