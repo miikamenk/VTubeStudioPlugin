@@ -25,7 +25,7 @@ class Backend(BackendBase):
         )
         ## time.sleep(5)
         ## self.conn = rpyc.connect("localhost", 18812) 
-        self.conn = self._wait_for_server(30)
+        self.conn = self._wait_for_server(20)
 
     def _wait_for_server(self, timeout=5):
         """Wait for the server to be up before attempting to connect."""
@@ -36,13 +36,9 @@ class Backend(BackendBase):
                 conn = rpyc.connect("localhost", 18812)
                 log.info("Server is up and ready to accept connections.")
                 return conn
-            except rpyc.ConnectionError as e:
+            except Exception as e:
                 last_exception = e
-                time.sleep(0.2)  # Retry after a short delay
-            except EOFError as e:
-                last_exception = e
-                log.error("Stream was closed unexpectedly. Retrying...")
-                time.sleep(0.5)  # Retry after a longer delay
+                time.sleep(0.5)  # Retry after a short delay
         raise TimeoutError(f"Failed to connect to the server within {timeout} seconds. Last error: {last_exception}")
 
     def get_connected(self):
