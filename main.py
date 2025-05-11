@@ -30,7 +30,7 @@ class VTubeStudio(PluginBase):
         self.launch_backend(
             os.path.join(self.PATH, "VTubeStudio", "backend.py"),
             os.path.join(self.PATH, "VTubeStudio", ".venv"),
-            open_in_terminal=True
+            open_in_terminal=False
         )
 
         self.lm = self.locale_manager
