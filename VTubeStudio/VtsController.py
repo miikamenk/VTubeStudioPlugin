@@ -1,11 +1,17 @@
 import threading
 import asyncio
 import rpyc
-from .vts import VTSController
+import sys
+import os
+
+sys.path.append(os.path.dirname(__file__))
+
+from vts import VTSController
 
 
 class VTSControlService(rpyc.Service):
-    def __init__(self):
+    def __init__(self, loop):
+        self.loop = loop
         self.vtsc = VTSController()  # Use SyncVTSController to handle communication with VTube Studio
 
     def on_connect(self, conn):
@@ -14,7 +20,7 @@ class VTSControlService(rpyc.Service):
     def on_disconnect(self, conn):
         print(f"Connection closed: {conn}")
 
-    def get_service_name():
+    def get_service_name(self):
         # Return the name of the service for logging purposes
         return "VTSControlService"
 
@@ -43,17 +49,13 @@ class VTSControlService(rpyc.Service):
         )
 
     def _run_async(self, func, *args):
-        """Helper to run async functions in a sync context."""
-        try:
-            # Check if there's an existing event loop in the current context
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            # If no event loop is found (in case this is being called outside of an async context),
-            # create a new event loop
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-
-        return loop.run_until_complete(func(*args))  # Run async function synchronously
+        # Submit async function to the persistent event loop
+        if self.loop.is_closed():
+            self.loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self.loop)
+        
+        future = asyncio.run_coroutine_threadsafe(func(*args), self.loop)
+        return future.result()
 
 # Start the rpyc service
 if __name__ == "__main__":
