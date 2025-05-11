@@ -1,6 +1,6 @@
 {
-    "version": "0.0.1",
-    "thumbnail": "",
-    "id": "com_miikamenk_vtubestudio",
-    "name": "vtubestudio"
+  "version": "0.0.1",
+  "thumbnail": "store/Thumbnail.png",
+  "id": "com_miikamenk_vtubestudio",
+  "name": "VTubeStudio plugin"
 }
