@@ -55,14 +55,12 @@ class VTSControlService(rpyc.Service):
 
         return loop.run_until_complete(func(*args))  # Run async function synchronously
 
-# Start the rpyc service
 if __name__ == "__main__":
-    from rpyc import ThreadingServer
-
-    print("main entry hit")
-
-    # Start the rpyc server to listen on port 18812
-    server = ThreadingServer(VTSControlService, port=18812)
-    print("Starting VTS control server on port 18812...")
-    server.start()
+    try:
+        from rpyc import ThreadingServer
+        server = ThreadingServer(VTSControlService, port=18812)
+        print("Server listening on port 18812...")
+        server.start()
+    except Exception as e:
+        print(f"Error: {e}")
 
