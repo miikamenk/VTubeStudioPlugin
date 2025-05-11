@@ -19,7 +19,7 @@ class VTSControlService(rpyc.Service):
         return "VTSControlService"
 
     def exposed_get_connected(self):
-        return self.vtsc.get_connected
+        return self._run_async(self.vtsc.get_connected)
 
     def exposed_connect_auth(self):
         return self._run_async(self.vtsc.connect_auth)

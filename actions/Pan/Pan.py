@@ -27,16 +27,18 @@ class Pan(ActionBase):
         icon_path = os.path.join(self.plugin_base.PATH, "assets", "pan.png")
         self.set_media(media_path=icon_path, size=0.75)
 
-        try:
-            self.plugin_base.auth = self.plugin_base.get_connected()
-            if not self.plugin_base.auth:
-                log.info("Not connected. Make sure VTubeStudio api is running")
-        except Exception as e:
-            self.plugin_base.auth = False
-            log.error(f"Error during connection/authentication process: {e}")
 
-        pos = self.plugin_base.backend.getModelPosition()
-        self.set_center_label(f"{round(pos['x'],2)}, {round(pos['y'],2)}")
+        if not self.plugin_base.auth_lock:
+            try:
+                self.plugin_base.get_connected()
+                if not self.plugin_base.auth:
+                    log.info("Not connected. Make sure VTubeStudio api is running")
+            except Exception as e:
+                self.plugin_base.auth = False
+                log.error(f"Error during connection/authentication process: {e}")
+
+            pos = self.plugin_base.backend.getModelPosition()
+            self.set_center_label(f"{round(pos['x'],2)}, {round(pos['y'],2)}")
 
 
     def event_callback(self, event: InputEvent, data: dict = None):
@@ -56,39 +58,56 @@ class Pan(ActionBase):
 
 
     def on_key_down(self) -> None:
-        settings = self.get_settings()
-        pos = self.plugin_base.backend.getModelPosition()
-        x = settings.get("press_x")
-        y = settings.get("press_y")
-        rot = pos["rot"]
-        zoom = pos["size"]
-        move_time = settings.get("time", 0)
+        try:
+            settings = self.get_settings()
+            if self.plugin_base.auth_lock:
+                self.plugin_base.auth_lock = False
+                self.plugin_base.get_connected()
+            pos = self.plugin_base.backend.getModelPosition()
+            x = settings.get("press_x")
+            y = settings.get("press_y")
+            rot = pos["rot"]
+            zoom = pos["size"]
+            move_time = settings.get("time", 0)
 
-        x = max(-1000, min(1000, x))
-        y = max(-1000, min(1000, y))
-        rot = max(-360, min(360, rot))
-        zoom = max(-100, min(100, zoom))
+            x = max(-1000, min(1000, x))
+            y = max(-1000, min(1000, y))
+            rot = max(-360, min(360, rot))
+            zoom = max(-100, min(100, zoom))
 
-        self.plugin_base.backend.moveModel(x, y, rot, zoom, False, move_time)
+            self.plugin_base.backend.moveModel(x, y, rot, zoom, False, move_time)
+        except Exception as e:
+            log.error(f"on_key_down error: {e}")
+            self.plugin_base.get_connected(True)
 
     def on_key_hold_start(self) -> None:
-        settings = self.get_settings()
-        pos = self.plugin_base.backend.getModelPosition()
-        x = settings.get("held_x")
-        y = settings.get("held_y")
-        rot = pos["rot"] 
-        zoom = pos["size"]
-        move_time = settings.get("time", 0)
+        try:
+            settings = self.get_settings()
+            if self.plugin_base.auth_lock:
+                self.plugin_base.auth_lock = False
+                self.plugin_base.get_connected()
+            pos = self.plugin_base.backend.getModelPosition()
+            x = settings.get("held_x")
+            y = settings.get("held_y")
+            rot = pos["rot"]
+            zoom = pos["size"]
+            move_time = settings.get("time", 0)
 
-        x = max(-1000, min(1000, x))
-        y = max(-1000, min(1000, y))
-        rot = max(-360, min(360, rot))
-        zoom = max(-100, min(100, zoom))
+            x = max(-1000, min(1000, x))
+            y = max(-1000, min(1000, y))
+            rot = max(-360, min(360, rot))
+            zoom = max(-100, min(100, zoom))
 
-        self.plugin_base.backend.moveModel(x, y, rot, zoom, False, move_time)
+            self.plugin_base.backend.moveModel(x, y, rot, zoom, False, move_time)
+        except Exception as e:
+            log.error(f"on_key_hold_start error: {e}")
+            self.plugin_base.get_connected(True)
 
     def on_dial_turn(self, direction: int):
         try:
+            if self.plugin_base.auth_lock:
+                self.plugin_base.auth_lock = False
+                self.plugin_base.get_connected()
             settings = self.get_settings()
             amount_x = settings.get("x", 0)
             amount_y = settings.get("y", 0)
@@ -97,12 +116,12 @@ class Pan(ActionBase):
             delta_x = -amount_x if direction < 0 else amount_x
             delta_y = -amount_y if direction < 0 else amount_y
 
-            # Relative move: just apply delta to zoom
             rot, zoom = 0, 0
 
             self.plugin_base.backend.moveModel(delta_x, delta_y, rot, zoom, True, move_time)
         except Exception as e:
-            log.error(e)
+            log.error(f"on_dial_turn error: {e}")
+            self.plugin_base.get_connected(True)
             self.show_error(1)
     
     def get_config_rows(self) -> list:

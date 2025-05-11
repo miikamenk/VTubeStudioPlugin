@@ -25,22 +25,34 @@ class TriggerHotkey(ActionBase):
         settings = self.get_settings()
         icon_path = os.path.join(self.plugin_base.PATH, "assets", "vts.png")
         self.set_media(media_path=icon_path, size=0.75)
-        self.set_label(text=settings.get("hotkey"), position="bottom", update=True)
 
-        try:
-            connected = self.plugin_base.get_connected()
-            if not connected:
-                log.info("Not connected. Make sure VTubeStudio api is running")
-        except Exception as e:
-            log.error(f"Error during connection/authentication process: {e}")
+        if not self.plugin_base.auth_lock:
+            try:
+                self.plugin_base.get_connected()
+                if not self.plugin_base.auth:
+                    log.info("Not connected. Make sure VTubeStudio api is running")
+            except Exception as e:
+                self.plugin_base.auth = False
+                log.error(f"Error during connection/authentication process: {e}")
+
+            self.set_label(text=settings.get("hotkey"), position="bottom", update=True)
+
         
     def on_ready(self) -> None:
         self.on_tick()
 
     def on_key_down(self) -> None:
-        settings = self.get_settings()
-        hotkey = settings.get("hotkey")
-        self.plugin_base.backend.triggerHotkey(hotkey)
+        ## removing possible api lock because of user interaction
+        try:
+            if self.plugin_base.auth_lock:
+                self.plugin_base.auth_lock = False
+                self.plugin_base.get_connected()
+            settings = self.get_settings()
+            hotkey = settings.get("hotkey")
+            self.plugin_base.backend.triggerHotkey(hotkey)
+        except Exception as e:
+            log.error(f"on_key_down error: {e}")
+            self.plugin_base.get_connected(True)
     
     def get_config_rows(self) -> list:
         self.hotkey_model = Gtk.StringList() # Hotkey 

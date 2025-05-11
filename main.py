@@ -22,12 +22,15 @@ class VTubeStudio(PluginBase):
     def __init__(self):
         super().__init__()
         self.auth = False
+        self.auth_lock = False
+        self.auth_limit = 3
+        self.auth_counter = 0
 
         print("Launch backend")
         self.launch_backend(
             os.path.join(self.PATH, "VTubeStudio", "backend.py"),
             os.path.join(self.PATH, "VTubeStudio", ".venv"),
-            open_in_terminal=False
+            open_in_terminal=True
         )
 
         self.lm = self.locale_manager
@@ -93,15 +96,28 @@ class VTubeStudio(PluginBase):
             app_version = "1.5.0-beta.10"
         )
 
-    def get_connected(self):
+    def get_connected(self, force = False):
         try:
-            if not self.auth:
-                self.backend.connect_auth()
-                connected = self.backend.get_connected()
-                self.auth = connected 
-                return connected
-            else:
-                return True
+            if not self.auth_lock:
+                if not self.auth or force:
+                    self.backend.connect_auth()
+                    connected = self.backend.get_connected()
+                    self.auth = connected 
+                    if connected:
+                        self.auth_counter = 0
+                        return connected
+                    else: 
+                        if self.auth_limit >= self.auth_counter:
+                            self.auth_counter += 1
+                        else:
+                            self.auth_lock = True
+            return False
         except Exception as e:
+            self.auth = False
+            if self.auth_limit >= self.auth_counter:
+                self.auth_counter += 1
+            else:
+                self.auth_lock = True
+            log.error(e)
             return False
 

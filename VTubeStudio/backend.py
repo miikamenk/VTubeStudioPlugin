@@ -4,6 +4,7 @@ import rpyc
 import subprocess
 import time
 from loguru import logger as log
+import atexit
 
 class Backend(BackendBase):
     def __init__(self):
@@ -26,6 +27,7 @@ class Backend(BackendBase):
         ## time.sleep(5)
         ## self.conn = rpyc.connect("localhost", 18812) 
         self.conn = self._wait_for_server(10)
+        atexit.register(self.shutdown)
 
     def _wait_for_server(self, timeout=5):
         """Wait for the server to be up before attempting to connect."""
@@ -58,6 +60,13 @@ class Backend(BackendBase):
 
     def getModelPosition(self):
         return self.conn.root.get_model_postion()
+
+    def shutdown(self):
+        if self.server_process:
+            log.info("Shutting down VTS RPyC server...")
+            self.server_process.terminate()
+            self.server_process.wait(timeout=5)
+            log.info("VTS RPyC server shut down.")
 
 backend = Backend()
 

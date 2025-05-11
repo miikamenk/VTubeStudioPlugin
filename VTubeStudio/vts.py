@@ -13,8 +13,12 @@ class VTSController():
     def __init__(self):
         self.vts = pyvts.vts(plugin_info=plugin_info)
 
-    def get_connected(self):
+    async def get_connected(self):
+        await self.vts.connect()
+        await self.vts.request_authenticate()
         auth_status = self.vts.get_authentic_status()
+        log.info(auth_status)
+        await self.vts.close()
         if auth_status == 2:
             return True
         else:
