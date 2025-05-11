@@ -6,5 +6,8 @@
   "actions.zoom.relative": "Relative",
   "actions.zoom.amount": "Amount",
   "actions.zoom.size": "Key press size",
-  "actions.zoom.held_size": "Key hold size"
+  "actions.zoom.held_size": "Key hold size",
+  "actions.rotate.amount": "Amount",
+  "actions.rotate.rotation": "Key press rotation",
+  "actions.rotate.held_rotation": "Key hold rotation"
 }
