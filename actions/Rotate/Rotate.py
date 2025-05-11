@@ -24,7 +24,7 @@ class Rotate(ActionBase):
         self.has_configuration = True
 
     def on_tick(self):
-        icon_path = os.path.join(self.plugin_base.PATH, "assets", "info.png")
+        icon_path = os.path.join(self.plugin_base.PATH, "assets", "rotate.png")
         self.set_media(media_path=icon_path, size=0.75)
 
         try:
@@ -90,9 +90,9 @@ class Rotate(ActionBase):
             self.show_error(1)
     
     def get_config_rows(self) -> list:
-        self.amount_scale = ScaleRow(title=self.plugin_base.lm.get("actions.rotate.amount"), value=1, min=1, max=90, step=1)
-        self.rotation_scale = ScaleRow(title=self.plugin_base.lm.get("actions.rotate.rotation"), value=0, min=-360, max=360, step=10)
-        self.held_rotation_scale = ScaleRow(title=self.plugin_base.lm.get("actions.rotate.held_rotation"), value=0, min=-360, max=360, step=10)
+        self.amount_scale = ScaleRow(title=self.plugin_base.lm.get("actions.rotate.amount"), value=1, min=1, max=90, step=1, draw_value=True)
+        self.rotation_scale = ScaleRow(title=self.plugin_base.lm.get("actions.rotate.rotation"), value=0, min=-360, max=360, step=10, draw_value=True)
+        self.held_rotation_scale = ScaleRow(title=self.plugin_base.lm.get("actions.rotate.held_rotation"), value=0, min=-360, max=360, step=10, draw_value=True)
 
         self.amount_scale.scale.connect("value-changed", self.on_amount_change)
         self.rotation_scale.scale.connect("value-changed", self.on_rotation_change)

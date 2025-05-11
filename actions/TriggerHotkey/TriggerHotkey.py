@@ -22,8 +22,10 @@ class TriggerHotkey(ActionBase):
         self.has_configuration = True
 
     def on_tick(self):
+        settings = self.get_settings()
         icon_path = os.path.join(self.plugin_base.PATH, "assets", "vts.png")
         self.set_media(media_path=icon_path, size=0.75)
+        self.set_label(text=settings.get("hotkey"), position="bottom", update=True)
 
         try:
             connected = self.plugin_base.get_connected()

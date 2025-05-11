@@ -61,7 +61,7 @@ class VTubeStudio(PluginBase):
             plugin_base = self,
             action_base = Pan,
             action_id = "dev_miikamenk_Template::Pan",
-            action_name = "Pan",
+            action_name = self.lm.get("actions.pan.name"),
             action_support={
                 Input.Key: ActionInputSupport.SUPPORTED,
                 Input.Dial: ActionInputSupport.SUPPORTED,
@@ -87,7 +87,7 @@ class VTubeStudio(PluginBase):
             plugin_base = self,
             action_base = Rotate,
             action_id = "dev_miikamenk_Template::Rotate",
-            action_name = "Rotate",
+            action_name = self.lm.get("actions.rotate.name"),
             action_support={
                 Input.Key: ActionInputSupport.SUPPORTED,
                 Input.Dial: ActionInputSupport.SUPPORTED,

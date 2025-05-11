@@ -24,7 +24,7 @@ class Zoom(ActionBase):
         self.has_configuration = True
 
     def on_tick(self):
-        icon_path = os.path.join(self.plugin_base.PATH, "assets", "info.png")
+        icon_path = os.path.join(self.plugin_base.PATH, "assets", "zoom.png")
         self.set_media(media_path=icon_path, size=0.75)
 
         try:
@@ -90,9 +90,9 @@ class Zoom(ActionBase):
             self.show_error(1)
     
     def get_config_rows(self) -> list:
-        self.amount_scale = ScaleRow(title=self.plugin_base.lm.get("actions.zoom.amount"), value=1, min=1, max=10, step=1)
-        self.size_scale = ScaleRow(title=self.plugin_base.lm.get("actions.zoom.size"), value=0, min=-100, max=100, step=5)
-        self.held_size_scale = ScaleRow(title=self.plugin_base.lm.get("actions.zoom.held_size"), value=0, min=-100, max=100, step=5)
+        self.amount_scale = ScaleRow(title=self.plugin_base.lm.get("actions.zoom.amount"), value=1, min=1, max=10, step=1, draw_value=True)
+        self.size_scale = ScaleRow(title=self.plugin_base.lm.get("actions.zoom.size"), value=0, min=-100, max=100, step=5, draw_value=True)
+        self.held_size_scale = ScaleRow(title=self.plugin_base.lm.get("actions.zoom.held_size"), value=0, min=-100, max=100, step=5, draw_value=True)
 
         self.amount_scale.scale.connect("value-changed", self.on_amount_change)
         self.size_scale.scale.connect("value-changed", self.on_size_change)

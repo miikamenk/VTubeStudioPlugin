@@ -7,7 +7,15 @@
   "actions.zoom.amount": "Amount",
   "actions.zoom.size": "Key press size",
   "actions.zoom.held_size": "Key hold size",
+  "actions.rotate.name": "Rotate",
   "actions.rotate.amount": "Amount",
   "actions.rotate.rotation": "Key press rotation",
-  "actions.rotate.held_rotation": "Key hold rotation"
+  "actions.rotate.held_rotation": "Key hold rotation",
+  "actions.pan.name": "Pan",
+  "actions.pan.x": "x",
+  "actions.pan.y": "y",
+  "actions.pan.press_x": "Key press x",
+  "actions.pan.press_y": "Key press y",
+  "actions.pan.held_x": "Key hold x",
+  "actions.pan.held_y": "Key hold y"
 }
