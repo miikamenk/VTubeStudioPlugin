@@ -1,7 +1,7 @@
 import threading
 import asyncio
 import rpyc
-from .vts import VTSController
+from vts import VTSController
 
 
 class VTSControlService(rpyc.Service):
@@ -14,7 +14,7 @@ class VTSControlService(rpyc.Service):
     def on_disconnect(self, conn):
         print(f"Connection closed: {conn}")
 
-    def get_service_name():
+    def get_service_name(self):
         # Return the name of the service for logging purposes
         return "VTSControlService"
 
