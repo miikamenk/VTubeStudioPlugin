@@ -38,7 +38,7 @@ class VTubeStudio(PluginBase):
         self.launch_backend(
             os.path.join(self.PATH, "VTubeStudio", "backend.py"),
             os.path.join(self.PATH, "VTubeStudio", ".venv"),
-            open_in_terminal=True
+            open_in_terminal=False
         )
   
         self.lm = self.locale_manager
@@ -47,7 +47,7 @@ class VTubeStudio(PluginBase):
         self.trigger_hotkey_holder = ActionHolder(
             plugin_base = self,
             action_base = TriggerHotkey,
-            action_id = "dev_miikamenk_Template::TriggerHotkey", # Change this to your own plugin id
+            action_id = "com_miikamenk_vtubestudio::TriggerHotkey", # Change this to your own plugin id
             action_name = self.lm.get("actions.trigger_hotkey.name"),
             action_support={
                 Input.Key: ActionInputSupport.SUPPORTED,
@@ -60,7 +60,7 @@ class VTubeStudio(PluginBase):
         self.pan_holder = ActionHolder(
             plugin_base = self,
             action_base = Pan,
-            action_id = "dev_miikamenk_Template::Pan",
+            action_id = "com_miikamenk_vtubestudio::Pan",
             action_name = self.lm.get("actions.pan.name"),
             action_support={
                 Input.Key: ActionInputSupport.SUPPORTED,
@@ -73,7 +73,7 @@ class VTubeStudio(PluginBase):
         self.zoom_holder = ActionHolder(
             plugin_base = self,
             action_base = Zoom,
-            action_id = "dev_miikamenk_Template::Zoom",
+            action_id = "com_miikamenk_vtubestudio::Zoom",
             action_name = self.lm.get("actions.zoom.name"),
             action_support={
                 Input.Key: ActionInputSupport.UNSUPPORTED,
@@ -86,7 +86,7 @@ class VTubeStudio(PluginBase):
         self.rotate_holder = ActionHolder(
             plugin_base = self,
             action_base = Rotate,
-            action_id = "dev_miikamenk_Template::Rotate",
+            action_id = "com_miikamenk_vtubestudio::Rotate",
             action_name = self.lm.get("actions.rotate.name"),
             action_support={
                 Input.Key: ActionInputSupport.SUPPORTED,
