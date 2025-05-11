@@ -58,8 +58,14 @@ class Rotate(ActionBase):
         y = pos["y"]
         rot = settings.get("rotation", 0)
         zoom = pos["size"]
+        move_time = settings.get("time", 0)
 
-        self.plugin_base.backend.moveModel(x, y, rot, zoom, False, 1)
+        x = max(-1000, min(1000, x))
+        y = max(-1000, min(1000, y))
+        rot = max(-360, min(360, rot))
+        zoom = max(-100, min(100, zoom))
+
+        self.plugin_base.backend.moveModel(x, y, rot, zoom, False, move_time)
 
     def on_key_hold_start(self) -> None:
         settings = self.get_settings()
@@ -68,14 +74,20 @@ class Rotate(ActionBase):
         y = pos["y"]
         rot = settings.get("held_rotation", 0)
         zoom = pos["size"]
+        move_time = settings.get("time", 0)
 
-        self.plugin_base.backend.moveModel(x, y, rot, zoom, False, 1)
+        x = max(-1000, min(1000, x))
+        y = max(-1000, min(1000, y))
+        rot = max(-360, min(360, rot))
+        zoom = max(-100, min(100, zoom))
+
+        self.plugin_base.backend.moveModel(x, y, rot, zoom, False, move_time)
 
     def on_dial_turn(self, direction: int):
         try:
             settings = self.get_settings()
             amount = settings.get("amount", 1)
-            move_time = 1.0
+            move_time = settings.get("time", 0)
 
             delta = -amount if direction < 0 else amount
 
@@ -93,14 +105,16 @@ class Rotate(ActionBase):
         self.amount_scale = ScaleRow(title=self.plugin_base.lm.get("actions.rotate.amount"), value=1, min=1, max=90, step=1, draw_value=True)
         self.rotation_scale = ScaleRow(title=self.plugin_base.lm.get("actions.rotate.rotation"), value=0, min=-360, max=360, step=10, draw_value=True)
         self.held_rotation_scale = ScaleRow(title=self.plugin_base.lm.get("actions.rotate.held_rotation"), value=0, min=-360, max=360, step=10, draw_value=True)
+        self.time_scale = ScaleRow(title=self.plugin_base.lm.get("plugin.time"), value=0, min=0, max=2, step=0.25, draw_value=True)
 
         self.amount_scale.scale.connect("value-changed", self.on_amount_change)
         self.rotation_scale.scale.connect("value-changed", self.on_rotation_change)
         self.held_rotation_scale.scale.connect("value-changed", self.on_held_rotation_change)
+        self.time_scale.scale.connect("value-changed", self.on_time_change)
 
         self.load_config_settings()
 
-        return [self.amount_scale, self.rotation_scale, self.held_rotation_scale]
+        return [self.amount_scale, self.rotation_scale, self.held_rotation_scale, self.time_scale]
  
     def load_config_settings(self):
         settings = self.get_settings()
@@ -109,6 +123,7 @@ class Rotate(ActionBase):
         self.amount_scale.scale.set_value(settings.get("amount", 1))
         self.rotation_scale.scale.set_value(settings.get("rotation", 0))
         self.held_rotation_scale.scale.set_value(settings.get("held_rotation", 0))
+        self.time_scale.scale.set_value(settings.get("time", 0))
  
     def on_amount_change(self, scale, *args):
         settings = self.get_settings()
@@ -138,5 +153,15 @@ class Rotate(ActionBase):
         ## self.display_info()
 
         settings["held_rotation"] = amount
+        self.set_settings(settings)
+
+    def on_time_change(self, scale, *args):
+        settings = self.get_settings()
+
+        amount = scale.get_value()
+
+        ## self.display_info()
+
+        settings["time"] = amount
         self.set_settings(settings)
 

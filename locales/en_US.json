@@ -1,5 +1,6 @@
 {
   "plugin.name": "VTubeStudio",
+  "plugin.time": "Transition time",
   "actions.trigger_hotkey.name": "Trigger hotkey",
   "actions.trigger_hotkey.hotkey": "Hotkey",
   "actions.zoom.name": "Zoom",

@@ -58,8 +58,14 @@ class Pan(ActionBase):
         y = settings.get("press_y")
         rot = pos["rot"]
         zoom = pos["size"]
+        move_time = settings.get("time", 0)
 
-        self.plugin_base.backend.moveModel(x, y, rot, zoom, False, 1)
+        x = max(-1000, min(1000, x))
+        y = max(-1000, min(1000, y))
+        rot = max(-360, min(360, rot))
+        zoom = max(-100, min(100, zoom))
+
+        self.plugin_base.backend.moveModel(x, y, rot, zoom, False, move_time)
 
     def on_key_hold_start(self) -> None:
         settings = self.get_settings()
@@ -68,15 +74,21 @@ class Pan(ActionBase):
         y = settings.get("held_y")
         rot = pos["rot"] 
         zoom = pos["size"]
+        move_time = settings.get("time", 0)
 
-        self.plugin_base.backend.moveModel(x, y, rot, zoom, False, 1)
+        x = max(-1000, min(1000, x))
+        y = max(-1000, min(1000, y))
+        rot = max(-360, min(360, rot))
+        zoom = max(-100, min(100, zoom))
+
+        self.plugin_base.backend.moveModel(x, y, rot, zoom, False, move_time)
 
     def on_dial_turn(self, direction: int):
         try:
             settings = self.get_settings()
             amount_x = settings.get("x", 0)
             amount_y = settings.get("y", 0)
-            move_time = 1.0
+            move_time = settings.get("time", 0)
 
             delta_x = -amount_x if direction < 0 else amount_x
             delta_y = -amount_y if direction < 0 else amount_y
@@ -85,7 +97,6 @@ class Pan(ActionBase):
             rot, zoom = 0, 0
 
             self.plugin_base.backend.moveModel(delta_x, delta_y, rot, zoom, True, move_time)
-
         except Exception as e:
             log.error(e)
             self.show_error(1)
@@ -97,6 +108,7 @@ class Pan(ActionBase):
         self.press_y_scale = ScaleRow(title=self.plugin_base.lm.get("actions.pan.press_y"), value=0, min=-2, max=2, step=0.1, draw_value=True)
         self.held_x_scale = ScaleRow(title=self.plugin_base.lm.get("actions.pan.held_x"), value=0, min=-2, max=2, step=0.1, draw_value=True)
         self.held_y_scale = ScaleRow(title=self.plugin_base.lm.get("actions.pan.held_y"), value=0, min=-2, max=2, step=0.1, draw_value=True)
+        self.time_scale = ScaleRow(title=self.plugin_base.lm.get("plugin.time"), value=0, min=0, max=2, step=0.25, draw_value=True)
 
         self.x_scale.scale.connect("value-changed", self.on_x_change)
         self.y_scale.scale.connect("value-changed", self.on_y_change)
@@ -104,10 +116,11 @@ class Pan(ActionBase):
         self.press_y_scale.scale.connect("value-changed", self.on_press_y_change)
         self.held_x_scale.scale.connect("value-changed", self.on_held_x_change)
         self.held_y_scale.scale.connect("value-changed", self.on_held_y_change)
+        self.time_scale.scale.connect("value-changed", self.on_time_change)
 
         self.load_config_settings()
 
-        return [self.x_scale, self.y_scale, self.press_x_scale, self.press_y_scale, self.held_x_scale, self.held_y_scale]
+        return [self.x_scale, self.y_scale, self.press_x_scale, self.press_y_scale, self.held_x_scale, self.held_y_scale, self.time_scale]
  
     def load_config_settings(self):
         settings = self.get_settings()
@@ -119,6 +132,7 @@ class Pan(ActionBase):
         self.press_y_scale.scale.set_value(settings.get("press_y", 0))
         self.held_x_scale.scale.set_value(settings.get("held_x", 0))
         self.held_y_scale.scale.set_value(settings.get("held_y", 0))
+        self.time_scale.scale.set_value(settings.get("time", 0))
  
     def on_x_change(self, scale, *args):
         settings = self.get_settings()
@@ -178,4 +192,14 @@ class Pan(ActionBase):
         ## self.display_info()
 
         settings["held_y"] = amount
+        self.set_settings(settings)
+
+    def on_time_change(self, scale, *args):
+        settings = self.get_settings()
+
+        amount = scale.get_value()
+
+        ## self.display_info()
+
+        settings["time"] = amount
         self.set_settings(settings)

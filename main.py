@@ -97,6 +97,5 @@ class VTubeStudio(PluginBase):
             self.backend.connect_auth()
             return self.backend.get_connected()
         except Exception as e:
-            log.error(e)
             return False
 
