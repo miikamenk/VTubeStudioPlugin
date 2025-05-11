@@ -100,7 +100,7 @@ class VTubeStudio(PluginBase):
         self.register(
             plugin_name = "VTubeStudio",
             github_repo = "https://github.com/miikamenk/com_miikamenk_VTubeStudio",
-            plugin_version = "0.0.1",
+            plugin_version = "1.0.0",
             app_version = "1.1.1-alpha"
         )
 
