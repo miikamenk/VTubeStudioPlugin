@@ -16,12 +16,12 @@ from .actions.TriggerHotkey.TriggerHotkey import TriggerHotkey
 from .actions.Pan.Pan import Pan
 from .actions.Zoom.Zoom import Zoom
 from .actions.Rotate.Rotate import Rotate
+import time
 
 
 class VTubeStudio(PluginBase):
     def __init__(self):
         super().__init__()
-
 
         print("Launch backend")
         self.launch_backend(
@@ -29,6 +29,14 @@ class VTubeStudio(PluginBase):
             os.path.join(self.PATH, "VTubeStudio", ".venv"),
             open_in_terminal=False
         )
+
+        # The backend doesn't always launch within the 0.3 seconds afforded by
+        # PluginBase. Give ourselves a bit more time.
+        for i in range(20):
+            if self.backend.conn is None:
+                time.sleep(0.2) 
+            else:
+                break
   
         self.lm = self.locale_manager
 
