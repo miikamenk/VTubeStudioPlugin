@@ -28,11 +28,15 @@ class Rotate(ActionBase):
         self.set_media(media_path=icon_path, size=0.75)
 
         try:
-            connected = self.plugin_base.get_connected()
-            if not connected:
+            self.plugin_base.auth = self.plugin_base.get_connected()
+            if not self.plugin_base.auth:
                 log.info("Not connected. Make sure VTubeStudio api is running")
         except Exception as e:
+            self.plugin_base.auth = False
             log.error(f"Error during connection/authentication process: {e}")
+
+        pos = self.plugin_base.backend.getModelPosition()
+        self.set_center_label(f"{round(pos['rot'],2)}")
 
 
     def event_callback(self, event: InputEvent, data: dict = None):

@@ -21,6 +21,7 @@ from .actions.Rotate.Rotate import Rotate
 class VTubeStudio(PluginBase):
     def __init__(self):
         super().__init__()
+        self.auth = False
 
         print("Launch backend")
         self.launch_backend(
@@ -94,8 +95,13 @@ class VTubeStudio(PluginBase):
 
     def get_connected(self):
         try:
-            self.backend.connect_auth()
-            return self.backend.get_connected()
+            if not self.auth:
+                self.backend.connect_auth()
+                connected = self.backend.get_connected()
+                self.auth = connected 
+                return connected
+            else:
+                return True
         except Exception as e:
             return False
 
