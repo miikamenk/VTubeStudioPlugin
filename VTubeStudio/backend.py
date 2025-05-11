@@ -25,7 +25,7 @@ class Backend(BackendBase):
         )
         ## time.sleep(5)
         ## self.conn = rpyc.connect("localhost", 18812) 
-        self.conn = self._wait_for_server(10)
+        self.conn = self._wait_for_server(30)
 
     def _wait_for_server(self, timeout=5):
         """Wait for the server to be up before attempting to connect."""
