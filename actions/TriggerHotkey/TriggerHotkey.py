@@ -15,17 +15,14 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import GObject, Gtk, Adw
 
-class TriggerHotkeyDial(ActionBase):
+class TriggerHotkey(ActionBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.has_configuration = True
 
     def on_tick(self):
-        print("here")
-        
-    def on_ready(self) -> None:
-        icon_path = os.path.join(self.plugin_base.PATH, "assets", "info.png")
+        icon_path = os.path.join(self.plugin_base.PATH, "assets", "vts.png")
         self.set_media(media_path=icon_path, size=0.75)
 
         try:
@@ -34,7 +31,9 @@ class TriggerHotkeyDial(ActionBase):
                 log.info("Not connected. Make sure VTubeStudio api is running")
         except Exception as e:
             log.error(f"Error during connection/authentication process: {e}")
-
+        
+    def on_ready(self) -> None:
+        self.on_tick()
 
     def on_key_down(self) -> None:
         settings = self.get_settings()
@@ -60,17 +59,17 @@ class TriggerHotkeyDial(ActionBase):
             self.hotkey_model.remove(0)
         for hotkey in hotkeys:
             self.hotkey_model.append(hotkey)
-
  
     def load_config_settings(self):
         settings = self.get_settings()
+        log.info(f"Loaded settings: {settings}")
         if settings == None:
             return
         hotkey = settings.get("hotkey")
-        for i, device in enumerate(self.hotkey_model):
-            if device == hotkey:
-                self.hotkey_row.combo_box.set_active(i)
-                break
+        for i, hotkey_model in enumerate(self.hotkey_model):
+            if hotkey_model.get_string() == hotkey:
+                self.hotkey_row.set_selected(i)
+                return
  
     def on_hotkey_change(self, combo, *args):
         hotkey = combo.get_selected_item().get_string()
